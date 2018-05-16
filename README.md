@@ -10,4 +10,4 @@ Currently it works only for Batsman but can be easily modified to suit the needs
 ![Start](https://i.imgur.com/pePzx8v.png)
 3. Set the name of the .xlsx file in the IPYNB notebook.
 ![Start](https://i.imgur.com/13zPw0U.png)
-https://i.imgur.com/pePzx8v.png
+
