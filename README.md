@@ -7,6 +7,7 @@ Currently it works only for Batsman but can be easily modified to suit the needs
 1. Get the link to the stats of a particular player from Cricnfo.
 ![Start](https://i.imgur.com/d0HgLX0.png)
 2. Replace the variable "url" with the link in the IPYNB Notebook.
-![Start](https://i.imgur.com/13zPw0U.png)
-3. Set the name of the .xlsx file in the IPYNB notebook.
 ![Start](https://i.imgur.com/pePzx8v.png)
+3. Set the name of the .xlsx file in the IPYNB notebook.
+![Start](https://i.imgur.com/13zPw0U.png)
+https://i.imgur.com/pePzx8v.png
