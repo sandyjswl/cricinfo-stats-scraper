@@ -2,6 +2,7 @@ import ssl
 import urllib.error
 import urllib.parse
 import urllib.request
+from collections import OrderedDict
 
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -15,10 +16,37 @@ class BattingHistoryDownloader:
         self.ctx.check_hostname = False
         self.ctx.verify_mode = ssl.CERT_NONE
 
-    def download_stats_as_dataframe(self, player_id, format_str):
+    def get_career_stats(self, player_id, format_str):
         format_stats_url = self.__create_url(player_id, Formats[format_str])
         data_frame = self.__download_batting_stats_dataframe(format_stats_url)
         return data_frame
+
+    def get_career_summary(self, player_id):
+        try:
+            html = urllib.request.urlopen(self.__create__profile_url(player_id), context=self.ctx).read()
+            list_of_dict = []
+            soup = BeautifulSoup(html, "lxml")
+            table_body = soup.find_all('tbody')
+            rows = table_body[0].find_all('tr')
+            headings = soup.findAll('tr', {"class", "head"})
+            tables_list = headings[:2]
+            batting_table = tables_list[0]
+            columns = batting_table.find_all("th")
+            batting_columns_list = []
+            for i in columns:
+                batting_columns_list.append(i.text)
+            for row in rows:
+                cols = row.find_all('td')
+                cols = [x.text.strip() for x in cols]
+                batting_data = OrderedDict()
+                for col in range(len(cols)):
+                    batting_data[batting_columns_list[col]] = cols[col]
+                list_of_dict.append(batting_data)
+            batting_stats_data_frame = pd.DataFrame(list_of_dict)
+            batting_stats_data_frame.set_index('', inplace=True)
+            return batting_stats_data_frame
+        except:
+            raise RuntimeError("Error downloading stats")
 
     def __download_batting_stats_dataframe(self, player_profile_link):
         try:
@@ -45,7 +73,7 @@ class BattingHistoryDownloader:
             data_frame = data_frame.drop('', 1)
             return data_frame
         except:
-            raise Exception("Error downloading stats")
+            raise RuntimeError("Error downloading stats")
 
     @staticmethod
     def __create_url(player_id, format: Formats):
@@ -54,3 +82,7 @@ class BattingHistoryDownloader:
             return "http://stats.espncricinfo.com/ci/engine/player/" + player_id + ".html?class=1;template=results;type=batting;view=match"
         return "http://stats.espncricinfo.com/ci/engine/player/" + player_id + ".html?class=" + format_class_map[
             format] + ";template=results;type=batting;view=innings"
+
+    @staticmethod
+    def __create__profile_url(player_id, ):
+        return "https://www.espncricinfo.com/india/content/player/" + player_id + ".html"
